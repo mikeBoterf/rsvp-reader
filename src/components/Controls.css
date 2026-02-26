@@ -1,0 +1,330 @@
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-2xl);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+}
+
+.controls-progress-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.controls-progress-row .progress-slider {
+    flex: 1;
+}
+
+.controls-main-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.controls-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.controls-left {
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.controls-center {
+    justify-content: center;
+}
+
+.controls-right {
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.controls-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.progress-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-left: var(--space-md);
+}
+
+/* Buttons */
+.btn {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    font-family: var(--font-serif);
+    transition: all var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--color-bg-primary);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.btn-play {
+    padding: var(--space-md) var(--space-xl);
+    font-size: var(--text-2xl);
+    background: var(--color-accent);
+    border-color: transparent;
+    color: var(--color-bg-primary);
+}
+
+.btn-play:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-md);
+    color: var(--color-bg-primary);
+}
+
+.btn-speed {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-lg);
+    font-weight: 600;
+}
+
+/* Progress */
+.controls-progress {
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.progress-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-border);
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-text {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Speed */
+.speed-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--color-bg-tertiary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.speed-input {
+    width: 60px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    font-family: var(--font-serif);
+    text-align: center;
+}
+
+.speed-input:focus {
+    outline: none;
+}
+
+/* Remove spinner from number input */
+.speed-input::-webkit-outer-spin-button,
+.speed-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.speed-label {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Chapter info */
+.chapter-info {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    font-family: var(--font-serif);
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Divider */
+.controls-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-border);
+    margin: 0 var(--space-sm);
+}
+
+/* Toggle buttons */
+.btn-toggle {
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    opacity: 0.5;
+    transition: all var(--transition-fast);
+}
+
+.btn-toggle.active {
+    opacity: 1;
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-bg-primary);
+}
+
+.btn-toggle:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+/* Font size control */
+.font-size-control {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.font-label {
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+    font-weight: 500;
+    user-select: none;
+}
+
+.font-small {
+    font-size: var(--text-sm);
+}
+
+.font-large {
+    font-size: var(--text-xl);
+}
+
+.font-slider {
+    width: 100px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border);
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    overflow: visible;
+    margin: 0 7px;
+    /* Half of thumb width to allow thumb to reach edges */
+}
+
+.font-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+}
+
+.font-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast);
+    margin-top: -5px;
+    /* Center thumb on track */
+}
+
+.font-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Bookmark & chapter buttons */
+.btn-bookmark,
+.btn-bookmarks-list,
+.btn-chapters {
+    padding: var(--space-sm);
+    font-size: var(--text-lg);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.btn-bookmark.active {
+    background: rgba(139, 69, 19, 0.15);
+    border-color: var(--color-accent);
+}
+
+.btn-bookmark:hover:not(:disabled),
+.btn-bookmarks-list:hover:not(:disabled),
+.btn-chapters:hover:not(:disabled) {
+    transform: scale(1.1);
+}
+
+/* Clickable chapter info label */
+.chapter-info-btn {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    font-family: var(--font-serif);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chapter-info-btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-border);
+    background: var(--color-bg-tertiary);
+}
+
+/* Settings row */
+.controls-settings {
+    justify-content: center;
+}
