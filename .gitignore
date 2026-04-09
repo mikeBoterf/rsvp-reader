@@ -1,6 +1,8 @@
 # Dependencies
 node_modules
 backend/venv
+backend/.nix-venv
+.nix-gsettings-schemas
 
 # Build output
 dist
@@ -9,6 +11,8 @@ backend/build
 backend/__pycache__
 backend/formats/__pycache__
 src-tauri/target
+src-tauri/binaries/python-backend-*-unknown-linux-gnu
+src-tauri/binaries/python-backend-*-apple-darwin
 
 # Logs
 logs
@@ -32,3 +36,4 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+result

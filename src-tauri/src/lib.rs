@@ -1,4 +1,3 @@
-use tauri::Manager;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -29,29 +28,50 @@ pub struct ParseResult {
 /// Parse an ebook file using the bundled Python backend sidecar
 #[tauri::command]
 async fn parse_ebook(app: tauri::AppHandle, file_path: String) -> Result<ParseResult, String> {
+    struct BackendOutput {
+        success: bool,
+        stdout: Vec<u8>,
+        stderr: Vec<u8>,
+    }
+
+    use std::process::Command;
     use tauri_plugin_shell::ShellExt;
-    
+
     println!("[parse_ebook] Starting parse for: {}", file_path);
-    
-    // Use the sidecar command - Tauri will find the correct binary for the platform
-    let sidecar_command = app.shell()
-        .sidecar("python-backend")
-        .map_err(|e| format!("Failed to create sidecar command: {}", e))?
-        .args(["parse", "--words-only", &file_path]);
-    
-    println!("[parse_ebook] Running sidecar...");
-    
-    let output = sidecar_command
-        .output()
-        .await
-        .map_err(|e| format!("Failed to run sidecar: {}", e))?;
-    
-    println!("[parse_ebook] Sidecar finished, success={}, stdout_len={}, stderr_len={}", 
-             output.status.success(), 
-             output.stdout.len(),
-             output.stderr.len());
-    
-    if !output.status.success() {
+    let output = match std::env::var("RSVP_READER_BACKEND") {
+        Ok(command) => {
+            println!("[parse_ebook] Running backend command: {}", command);
+            let output = Command::new(command)
+                .args(["parse", "--words-only", &file_path])
+                .output()
+                .map_err(|e| format!("Failed to run backend command: {}", e))?;
+            BackendOutput {
+                success: output.status.success(),
+                stdout: output.stdout,
+                stderr: output.stderr,
+            }
+        }
+        Err(_) => {
+            println!("[parse_ebook] Running bundled sidecar...");
+            let output = app.shell()
+                .sidecar("python-backend")
+                .map_err(|e| format!("Failed to create sidecar command: {}", e))?
+                .args(["parse", "--words-only", &file_path])
+                .output()
+                .await
+                .map_err(|e| format!("Failed to run sidecar: {}", e))?;
+            BackendOutput {
+                success: output.status.success(),
+                stdout: output.stdout,
+                stderr: output.stderr,
+            }
+        }
+    };
+
+    println!("[parse_ebook] Backend finished, success={}, stdout_len={}, stderr_len={}",
+             output.success, output.stdout.len(), output.stderr.len());
+
+    if !output.success {
         let stderr = String::from_utf8_lossy(&output.stderr);
         let stdout = String::from_utf8_lossy(&output.stdout);
         println!("[parse_ebook] Backend error - stderr: {}", stderr);

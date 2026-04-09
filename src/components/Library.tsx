@@ -11,6 +11,8 @@ interface LibraryProps {
     onRemoveBook: (bookId: string) => void;
     onProgressTypeChange: (bookId: string, type: LibraryBook['progressDisplayType']) => void;
     onAddBook: () => void;
+    addBookFormats?: string;
+    emptyHint?: string;
     isAddingBook?: boolean;
 }
 
@@ -22,6 +24,8 @@ export function Library({
     onRemoveBook,
     onProgressTypeChange,
     onAddBook,
+    addBookFormats = 'PDF • EPUB • MOBI • TXT',
+    emptyHint = '👆 Click "Add Book" to start reading',
     isAddingBook = false,
 }: LibraryProps) {
     // Sort books: recently read first
@@ -60,7 +64,7 @@ export function Library({
                             {isAddingBook ? 'Loading...' : 'Add Book'}
                         </span>
                         <span className="add-book-formats">
-                            PDF • EPUB • MOBI • TXT
+                            {addBookFormats}
                         </span>
                     </button>
 
@@ -81,7 +85,7 @@ export function Library({
                 {/* Empty state message */}
                 {books.length === 0 && (
                     <div className="library-empty-hint">
-                        <p>👆 Click "Add Book" to start reading</p>
+                        <p>{emptyHint}</p>
                     </div>
                 )}
             </main>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -13,6 +13,8 @@ import { BookmarkList } from './components/BookmarkList';
 import { useRSVP, Word, Chapter } from './hooks/useRSVP';
 import { useLibrary } from './hooks/useLibrary';
 import { useSettings } from './hooks/useSettings';
+import { parseBrowserFile } from './lib/browserBooks';
+import { buildBrowserParseResult } from './lib/rsvpTokenizer';
 import './styles/design-tokens.css';
 
 // Supported file formats
@@ -37,9 +39,11 @@ interface BookData {
   wordCount: number;
   format: string;
   filePath: string;
+  browserText?: string;
 }
 
 function AppContent() {
+  const browserFileInputRef = useRef<HTMLInputElement | null>(null);
   const [bookData, setBookData] = useState<BookData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +110,7 @@ function AppContent() {
         wordCount: result.word_count || result.words.length,
         format: result.format || '',
         filePath,
+        browserText: undefined,
       };
     } catch (err) {
       console.error('Parse error:', err);
@@ -113,6 +118,20 @@ function AppContent() {
       return null;
     }
   }, [isTauri]);
+
+  const parseBrowserBook = useCallback(async (file: File): Promise<BookData | null> => {
+    try {
+      const result = await parseBrowserFile(file);
+      return {
+        ...result,
+        filePath: file.name,
+      };
+    } catch (err) {
+      console.error('Browser parse error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load file');
+      return null;
+    }
+  }, []);
 
   // Handle file selection (new book)
   const handleFileSelect = useCallback(async (filePath: string) => {
@@ -129,6 +148,7 @@ function AppContent() {
         author: data.author,
         format: data.format,
         filePath: data.filePath,
+        browserText: data.browserText,
         wordCount: data.wordCount,
         totalChapters: data.chapters.length,
       });
@@ -142,10 +162,59 @@ function AppContent() {
     setIsLoading(false);
   }, [parseFile, library, rsvp]);
 
+  const handleBrowserFileSelect = useCallback(async (file: File | null) => {
+    if (!file) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    const data = await parseBrowserBook(file);
+    if (data) {
+      const newBook = library.addBook({
+        title: data.title,
+        author: data.author,
+        format: data.format,
+        filePath: data.filePath,
+        browserText: data.browserText,
+        wordCount: data.wordCount,
+        totalChapters: data.chapters.length,
+      });
+
+      library.setActiveBook(newBook.id);
+      setBookData(data);
+      rsvp.reset();
+      setIsReading(true);
+    }
+
+    setIsLoading(false);
+  }, [library, parseBrowserBook, rsvp]);
+
   // Handle selecting book from library
   const handleSelectBook = useCallback(async (bookId: string) => {
     const book = library.getBook(bookId);
     if (!book) return;
+
+    if (!isTauri && book.browserText) {
+      library.setActiveBook(bookId);
+      setBookData({
+        ...buildBrowserParseResult({
+          title: book.title,
+          author: book.author,
+          format: book.format,
+          text: book.browserText,
+        }),
+        filePath: book.filePath,
+      });
+      rsvp.reset();
+      setTimeout(() => rsvp.goToWord(book.currentWordIndex), 100);
+      setIsReading(true);
+      return;
+    }
+
+    if (!isTauri) {
+      setError('This book was added in desktop mode. Re-open it in the desktop app, or import a .txt file in browser mode.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -163,28 +232,27 @@ function AppContent() {
     }
 
     setIsLoading(false);
-  }, [library, parseFile, rsvp]);
+  }, [isTauri, library, parseFile, rsvp]);
 
-  // Handle add book via dialog
   const handleAddBook = useCallback(async () => {
-    if (!isTauri) return;
+    if (isTauri) {
+      try {
+        const selected = await open({
+          multiple: false,
+          filters: [{ name: 'Ebooks', extensions: SUPPORTED_FORMATS }],
+        });
 
-    try {
-      const selected = await open({
-        multiple: false,
-        filters: [{
-          name: 'Ebooks',
-          extensions: SUPPORTED_FORMATS
-        }]
-      });
-
-      if (selected && typeof selected === 'string') {
-        await handleFileSelect(selected);
+        if (selected && typeof selected === 'string') {
+          await handleFileSelect(selected);
+        }
+      } catch (err) {
+        console.error('Failed to open file dialog:', err);
       }
-    } catch (err) {
-      console.error('Failed to open file dialog:', err);
+      return;
     }
-  }, [isTauri, handleFileSelect]);
+
+    browserFileInputRef.current?.click();
+  }, [handleFileSelect, isTauri]);
 
   // Exit reading mode
   const handleExitReading = useCallback(() => {
@@ -266,7 +334,21 @@ function AppContent() {
             onRemoveBook={library.removeBook}
             onProgressTypeChange={library.setProgressDisplayType}
             onAddBook={handleAddBook}
+            addBookFormats={isTauri ? 'PDF • EPUB • Kindle • TXT' : 'TXT • EPUB • Kindle'}
+            emptyHint={isTauri
+              ? '👆 Click "Add Book" to start reading'
+              : '👆 Browser mode supports TXT, EPUB, and Kindle books (.mobi, .azw, .azw3). Use the desktop app for PDF.'}
             isAddingBook={isLoading}
+          />
+          <input
+            ref={browserFileInputRef}
+            type="file"
+            accept=".txt,.text,.epub,.mobi,.azw,.azw3"
+            style={{ display: 'none' }}
+            onChange={(event) => {
+              void handleBrowserFileSelect(event.target.files?.[0] ?? null);
+              event.target.value = '';
+            }}
           />
         </>
       )}
@@ -349,4 +431,3 @@ function App() {
 }
 
 export default App;
-

@@ -2,14 +2,14 @@
 
 <p align="center">
   <strong>A free, open-source desktop speed reading app using RSVP (Rapid Serial Visual Presentation).</strong><br/>
-  Read books 2–5× faster with scientifically-backed word-by-word display and ORP (Optimal Recognition Point) highlighting.
+  Import local books, keep your library on your machine, and read 2–5× faster with ORP (Optimal Recognition Point) highlighting.
 </p>
 
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#supported-formats">Formats</a> •
-  <a href="#download">Download</a> •
-  <a href="#build-from-source">Build</a> •
+  <a href="#running-with-nix">Nix</a> •
+  <a href="#building-without-nix">Manual Build</a> •
   <a href="#keyboard-shortcuts">Shortcuts</a> •
   <a href="#contributing">Contributing</a>
 </p>
@@ -18,6 +18,7 @@
 
 ## ✨ Features
 
+- 📚 **Desktop-first workflow** — open the app, add books, and keep your reading library local
 - 🚀 **RSVP Speed Reading** — words displayed one at a time at your chosen speed (100–1500+ WPM)
 - 🎯 **ORP Highlighting** — the optimal recognition point of each word is highlighted for faster processing
 - 📦 **Phrase Grouping** — optionally display 2–5 words at a time with smart boundary detection
@@ -38,13 +39,33 @@
 | Kindle | `.mobi`, `.azw`, `.azw3` | mobi |
 | Plain Text | `.txt` | Built-in |
 
-## 📥 Download
+## 🧭 Product Model
 
-> **Coming soon** — Pre-built installers for Windows, macOS, and Linux.
+- **Desktop app** — the primary product; full local file support including PDF
+- **Web app** — useful for development and lighter browser-only use; PDF remains desktop-only
+- In development, Tauri uses a local Vite server; in production, the frontend is bundled into the native app
 
-For now, you can [build from source](#build-from-source) in just a few steps.
+## 🚀 Running with Nix
 
-## 🛠️ Build from Source
+The flake is desktop-first:
+
+```bash
+nix build              # build the native desktop app
+./result/bin/rsvp-reader
+
+nix run                # run the packaged native desktop app
+nix run .#dev-desktop  # Tauri + Vite development workflow
+nix run .#dev-web      # browser-only Vite development workflow
+nix develop            # toolchain shell
+```
+
+Notes:
+- `nix build` and `nix run` target the packaged desktop app, not the dev server.
+- Desktop mode supports PDF, EPUB, Kindle (`.mobi`, `.azw`, `.azw3`), and TXT.
+- Web mode supports local `.txt`, `.epub`, and Kindle (`.mobi`, `.azw`, `.azw3`) imports in-browser.
+- The flake can be imported from another repository via `packages.${system}.default`.
+
+## 🛠️ Building without Nix
 
 ### Prerequisites
 

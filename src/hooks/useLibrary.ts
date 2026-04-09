@@ -12,6 +12,7 @@ export interface LibraryBook {
     author: string;
     format: string;
     filePath: string;
+    browserText?: string;
     coverUrl?: string;
     wordCount: number;
     currentWordIndex: number;
