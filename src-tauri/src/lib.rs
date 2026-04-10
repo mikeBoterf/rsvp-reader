@@ -53,7 +53,8 @@ async fn parse_ebook(app: tauri::AppHandle, file_path: String) -> Result<ParseRe
         }
         Err(_) => {
             println!("[parse_ebook] Running bundled sidecar...");
-            let output = app.shell()
+            let output = app
+                .shell()
                 .sidecar("python-backend")
                 .map_err(|e| format!("Failed to create sidecar command: {}", e))?
                 .args(["parse", "--words-only", &file_path])
@@ -68,22 +69,36 @@ async fn parse_ebook(app: tauri::AppHandle, file_path: String) -> Result<ParseRe
         }
     };
 
-    println!("[parse_ebook] Backend finished, success={}, stdout_len={}, stderr_len={}",
-             output.success, output.stdout.len(), output.stderr.len());
+    println!(
+        "[parse_ebook] Backend finished, success={}, stdout_len={}, stderr_len={}",
+        output.success,
+        output.stdout.len(),
+        output.stderr.len()
+    );
 
     if !output.success {
         let stderr = String::from_utf8_lossy(&output.stderr);
         let stdout = String::from_utf8_lossy(&output.stdout);
         println!("[parse_ebook] Backend error - stderr: {}", stderr);
         println!("[parse_ebook] Backend error - stdout: {}", stdout);
-        return Err(format!("Backend error: {}", if stderr.is_empty() { stdout.to_string() } else { stderr.to_string() }));
+        return Err(format!(
+            "Backend error: {}",
+            if stderr.is_empty() {
+                stdout.to_string()
+            } else {
+                stderr.to_string()
+            }
+        ));
     }
-    
-    let stdout = String::from_utf8(output.stdout)
-        .map_err(|e| format!("Invalid UTF-8 output: {}", e))?;
-    
-    println!("[parse_ebook] Parsing JSON response ({} bytes)...", stdout.len());
-    
+
+    let stdout =
+        String::from_utf8(output.stdout).map_err(|e| format!("Invalid UTF-8 output: {}", e))?;
+
+    println!(
+        "[parse_ebook] Parsing JSON response ({} bytes)...",
+        stdout.len()
+    );
+
     // Try to parse and extract more detailed error if it fails
     match serde_json::from_str::<ParseResult>(&stdout) {
         Ok(result) => {
@@ -92,17 +107,26 @@ async fn parse_ebook(app: tauri::AppHandle, file_path: String) -> Result<ParseRe
                 println!("[parse_ebook] Backend returned error: {}", error);
                 return Err(error.clone());
             }
-            println!("[parse_ebook] Successfully parsed {} words", result.words.len());
+            println!(
+                "[parse_ebook] Successfully parsed {} words",
+                result.words.len()
+            );
             Ok(result)
         }
         Err(e) => {
-            let preview = if stdout.len() > 500 { 
-                format!("{}...(truncated)", &stdout[..500]) 
-            } else { 
-                stdout.clone() 
+            let preview = if stdout.len() > 500 {
+                format!("{}...(truncated)", &stdout[..500])
+            } else {
+                stdout.clone()
             };
-            println!("[parse_ebook] JSON parse error: {} - Preview: {}", e, preview);
-            Err(format!("Failed to parse JSON: {} - Response preview: {}", e, preview))
+            println!(
+                "[parse_ebook] JSON parse error: {} - Preview: {}",
+                e, preview
+            );
+            Err(format!(
+                "Failed to parse JSON: {} - Response preview: {}",
+                e, preview
+            ))
         }
     }
 }

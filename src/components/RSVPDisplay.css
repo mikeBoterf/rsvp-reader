@@ -1,137 +1,137 @@
 .rsvp-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    padding: var(--space-xl);
-    cursor: pointer;
-    user-select: none;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--space-xl);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
 }
 
 .rsvp-empty {
-    background: var(--color-bg-secondary);
-    border-radius: var(--radius-lg);
-    border: 2px dashed var(--color-border);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-border);
 }
 
 .rsvp-placeholder {
-    color: var(--color-text-muted);
-    font-size: var(--text-lg);
-    font-family: var(--font-serif);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  font-family: var(--font-serif);
 }
 
 /* Focus line - positioned at ORP */
 .rsvp-focus-line {
-    width: 2px;
-    height: 16px;
-    background: var(--color-orp);
-    opacity: 0.7;
-    /* Align with ORP by matching the grid offset */
-    margin-left: 0;
-    align-self: center;
+  width: 2px;
+  height: 16px;
+  background: var(--color-orp);
+  opacity: 0.7;
+  /* Align with ORP by matching the grid offset */
+  margin-left: 0;
+  align-self: center;
 }
 
 /* Word container with CSS Grid for precise ORP alignment */
 .rsvp-word-container {
-    display: grid;
-    /* Three columns: before (flexible), ORP (auto), after (flexible) */
-    /* The ORP column is placed exactly at center */
-    grid-template-columns: 1fr auto 1fr;
-    align-items: baseline;
-    width: 100%;
-    max-width: 90vw;
-    font-size: var(--text-rsvp);
-    font-weight: 500;
-    font-family: var(--font-reading);
-    letter-spacing: 0.02em;
-    padding: var(--space-sm) 0;
+  display: grid;
+  /* Three columns: before (flexible), ORP (auto), after (flexible) */
+  /* The ORP column is placed exactly at center */
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  width: 100%;
+  max-width: 90vw;
+  font-size: var(--text-rsvp);
+  font-weight: 500;
+  font-family: var(--font-reading);
+  letter-spacing: 0.02em;
+  padding: var(--space-sm) 0;
 }
 
 /* Font variations based on user selection */
-[data-font="times"] .rsvp-word-container {
-    font-family: 'Times New Roman', Georgia, serif;
+[data-font='times'] .rsvp-word-container {
+  font-family: 'Times New Roman', Georgia, serif;
 }
 
-[data-font="playfair"] .rsvp-word-container {
-    font-family: 'Playfair Display', Georgia, serif;
+[data-font='playfair'] .rsvp-word-container {
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-[data-font="baskerville"] .rsvp-word-container {
-    font-family: 'Libre Baskerville', Georgia, serif;
+[data-font='baskerville'] .rsvp-word-container {
+  font-family: 'Libre Baskerville', Georgia, serif;
 }
 
 /* Before ORP: right-aligned, pushes text to the right edge */
 .rsvp-before {
-    color: var(--color-text-primary);
-    text-align: right;
-    justify-self: end;
-    padding-right: 1px;
-    white-space: nowrap;
+  color: var(--color-text-primary);
+  text-align: right;
+  justify-self: end;
+  padding-right: 1px;
+  white-space: nowrap;
 }
 
 /* ORP character: fixed in center, highlighted */
 .rsvp-orp {
-    color: var(--color-orp);
-    font-weight: 700;
-    position: relative;
+  color: var(--color-orp);
+  font-weight: 700;
+  position: relative;
 }
 
 /* Vertical focus mark above and below ORP */
 .rsvp-orp::before,
 .rsvp-orp::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 12px;
-    background: var(--color-orp);
-    opacity: 0.6;
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 12px;
+  background: var(--color-orp);
+  opacity: 0.6;
 }
 
 .rsvp-orp::before {
-    bottom: 100%;
-    margin-bottom: 4px;
+  bottom: 100%;
+  margin-bottom: 4px;
 }
 
 .rsvp-orp::after {
-    top: 100%;
-    margin-top: 4px;
+  top: 100%;
+  margin-top: 4px;
 }
 
 /* After ORP: left-aligned, starts from left edge */
 .rsvp-after {
-    color: var(--color-text-primary);
-    text-align: left;
-    justify-self: start;
-    padding-left: 1px;
-    white-space: nowrap;
+  color: var(--color-text-primary);
+  text-align: left;
+  justify-self: start;
+  padding-left: 1px;
+  white-space: nowrap;
 }
 
 .rsvp-phrase-mode .rsvp-before,
 .rsvp-phrase-mode .rsvp-after {
-    letter-spacing: 0.04em;
+  letter-spacing: 0.04em;
 }
 
 .rsvp-phrase-indicator {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    color: var(--color-text-muted);
-    font-size: var(--text-xs, 0.75rem);
-    font-family: var(--font-serif);
-    opacity: 0.6;
-    padding: 2px 8px;
-    border-radius: var(--radius-sm, 4px);
-    background: var(--color-bg-tertiary, rgba(128, 128, 128, 0.1));
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs, 0.75rem);
+  font-family: var(--font-serif);
+  opacity: 0.6;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  background: var(--color-bg-tertiary, rgba(128, 128, 128, 0.1));
 }
 
 .rsvp-paused-indicator {
-    position: absolute;
-    bottom: 10px;
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    font-family: var(--font-serif);
+  position: absolute;
+  bottom: 10px;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-family: var(--font-serif);
 }

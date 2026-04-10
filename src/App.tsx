@@ -57,7 +57,8 @@ function AppContent() {
 
   // Check if running in Tauri
   useEffect(() => {
-    const hasTauri = typeof window !== 'undefined' &&
+    const hasTauri =
+      typeof window !== 'undefined' &&
       ('__TAURI__' in window || '__TAURI_INTERNALS__' in window);
     setIsTauri(hasTauri);
   }, []);
@@ -85,154 +86,171 @@ function AppContent() {
   }, [rsvp.isPlaying, rsvp.currentWordIndex, rsvp.currentChapterIndex]);
 
   // Parse file using Python backend
-  const parseFile = useCallback(async (filePath: string): Promise<BookData | null> => {
-    if (!isTauri) {
-      setError('File parsing requires the desktop app.');
-      return null;
-    }
-
-    try {
-      const result = await invoke<ParseResult>('parse_ebook', { filePath });
-
-      if (result.error) {
-        throw new Error(result.error);
+  const parseFile = useCallback(
+    async (filePath: string): Promise<BookData | null> => {
+      if (!isTauri) {
+        setError('File parsing requires the desktop app.');
+        return null;
       }
 
-      if (!result.words || result.words.length === 0) {
-        throw new Error('No words found in the book.');
+      try {
+        const result = await invoke<ParseResult>('parse_ebook', { filePath });
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (!result.words || result.words.length === 0) {
+          throw new Error('No words found in the book.');
+        }
+
+        return {
+          title: result.title || 'Untitled',
+          author: result.author || 'Unknown Author',
+          words: result.words,
+          chapters: result.chapters || [],
+          wordCount: result.word_count || result.words.length,
+          format: result.format || '',
+          filePath,
+          browserText: undefined,
+        };
+      } catch (err) {
+        console.error('Parse error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load file');
+        return null;
       }
+    },
+    [isTauri]
+  );
 
-      return {
-        title: result.title || 'Untitled',
-        author: result.author || 'Unknown Author',
-        words: result.words,
-        chapters: result.chapters || [],
-        wordCount: result.word_count || result.words.length,
-        format: result.format || '',
-        filePath,
-        browserText: undefined,
-      };
-    } catch (err) {
-      console.error('Parse error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load file');
-      return null;
-    }
-  }, [isTauri]);
-
-  const parseBrowserBook = useCallback(async (file: File): Promise<BookData | null> => {
-    try {
-      const result = await parseBrowserFile(file);
-      return {
-        ...result,
-        filePath: file.name,
-      };
-    } catch (err) {
-      console.error('Browser parse error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load file');
-      return null;
-    }
-  }, []);
+  const parseBrowserBook = useCallback(
+    async (file: File): Promise<BookData | null> => {
+      try {
+        const result = await parseBrowserFile(file);
+        return {
+          ...result,
+          filePath: file.name,
+        };
+      } catch (err) {
+        console.error('Browser parse error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load file');
+        return null;
+      }
+    },
+    []
+  );
 
   // Handle file selection (new book)
-  const handleFileSelect = useCallback(async (filePath: string) => {
-    if (!filePath) return;
+  const handleFileSelect = useCallback(
+    async (filePath: string) => {
+      if (!filePath) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    const data = await parseFile(filePath);
-    if (data) {
-      // Add to library
-      const newBook = library.addBook({
-        title: data.title,
-        author: data.author,
-        format: data.format,
-        filePath: data.filePath,
-        browserText: data.browserText,
-        wordCount: data.wordCount,
-        totalChapters: data.chapters.length,
-      });
+      const data = await parseFile(filePath);
+      if (data) {
+        // Add to library
+        const newBook = library.addBook({
+          title: data.title,
+          author: data.author,
+          format: data.format,
+          filePath: data.filePath,
+          browserText: data.browserText,
+          wordCount: data.wordCount,
+          totalChapters: data.chapters.length,
+        });
 
-      library.setActiveBook(newBook.id);
-      setBookData(data);
-      rsvp.reset();
-      setIsReading(true);
-    }
+        library.setActiveBook(newBook.id);
+        setBookData(data);
+        rsvp.reset();
+        setIsReading(true);
+      }
 
-    setIsLoading(false);
-  }, [parseFile, library, rsvp]);
+      setIsLoading(false);
+    },
+    [parseFile, library, rsvp]
+  );
 
-  const handleBrowserFileSelect = useCallback(async (file: File | null) => {
-    if (!file) return;
+  const handleBrowserFileSelect = useCallback(
+    async (file: File | null) => {
+      if (!file) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    const data = await parseBrowserBook(file);
-    if (data) {
-      const newBook = library.addBook({
-        title: data.title,
-        author: data.author,
-        format: data.format,
-        filePath: data.filePath,
-        browserText: data.browserText,
-        wordCount: data.wordCount,
-        totalChapters: data.chapters.length,
-      });
+      const data = await parseBrowserBook(file);
+      if (data) {
+        const newBook = library.addBook({
+          title: data.title,
+          author: data.author,
+          format: data.format,
+          filePath: data.filePath,
+          browserText: data.browserText,
+          wordCount: data.wordCount,
+          totalChapters: data.chapters.length,
+        });
 
-      library.setActiveBook(newBook.id);
-      setBookData(data);
-      rsvp.reset();
-      setIsReading(true);
-    }
+        library.setActiveBook(newBook.id);
+        setBookData(data);
+        rsvp.reset();
+        setIsReading(true);
+      }
 
-    setIsLoading(false);
-  }, [library, parseBrowserBook, rsvp]);
+      setIsLoading(false);
+    },
+    [library, parseBrowserBook, rsvp]
+  );
 
   // Handle selecting book from library
-  const handleSelectBook = useCallback(async (bookId: string) => {
-    const book = library.getBook(bookId);
-    if (!book) return;
+  const handleSelectBook = useCallback(
+    async (bookId: string) => {
+      const book = library.getBook(bookId);
+      if (!book) return;
 
-    if (!isTauri && book.browserText) {
-      library.setActiveBook(bookId);
-      setBookData({
-        ...buildBrowserParseResult({
-          title: book.title,
-          author: book.author,
-          format: book.format,
-          text: book.browserText,
-        }),
-        filePath: book.filePath,
-      });
-      rsvp.reset();
-      setTimeout(() => rsvp.goToWord(book.currentWordIndex), 100);
-      setIsReading(true);
-      return;
-    }
+      if (!isTauri && book.browserText) {
+        library.setActiveBook(bookId);
+        setBookData({
+          ...buildBrowserParseResult({
+            title: book.title,
+            author: book.author,
+            format: book.format,
+            text: book.browserText,
+          }),
+          filePath: book.filePath,
+        });
+        rsvp.reset();
+        setTimeout(() => rsvp.goToWord(book.currentWordIndex), 100);
+        setIsReading(true);
+        return;
+      }
 
-    if (!isTauri) {
-      setError('This book was added in desktop mode. Re-open it in the desktop app, or import a .txt file in browser mode.');
-      return;
-    }
+      if (!isTauri) {
+        setError(
+          'This book was added in desktop mode. Re-open it in the desktop app, or import a .txt file in browser mode.'
+        );
+        return;
+      }
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    const data = await parseFile(book.filePath);
-    if (data) {
-      library.setActiveBook(bookId);
-      setBookData(data);
-      // Resume from saved position
-      rsvp.reset();
-      setTimeout(() => {
-        rsvp.goToWord(book.currentWordIndex);
-      }, 100);
-      setIsReading(true);
-    }
+      const data = await parseFile(book.filePath);
+      if (data) {
+        library.setActiveBook(bookId);
+        setBookData(data);
+        // Resume from saved position
+        rsvp.reset();
+        setTimeout(() => {
+          rsvp.goToWord(book.currentWordIndex);
+        }, 100);
+        setIsReading(true);
+      }
 
-    setIsLoading(false);
-  }, [isTauri, library, parseFile, rsvp]);
+      setIsLoading(false);
+    },
+    [isTauri, library, parseFile, rsvp]
+  );
 
   const handleAddBook = useCallback(async () => {
     if (isTauri) {
@@ -281,14 +299,20 @@ function AppContent() {
     }
   }, [library, rsvp.currentWordIndex]);
 
-  const handleBookmarkJump = useCallback((wordIndex: number) => {
-    rsvp.goToWord(wordIndex);
-  }, [rsvp]);
+  const handleBookmarkJump = useCallback(
+    (wordIndex: number) => {
+      rsvp.goToWord(wordIndex);
+    },
+    [rsvp]
+  );
 
-  const handleBookmarkRemove = useCallback((wordIndex: number) => {
-    if (!library.activeBookId) return;
-    library.removeBookmark(library.activeBookId, wordIndex);
-  }, [library]);
+  const handleBookmarkRemove = useCallback(
+    (wordIndex: number) => {
+      if (!library.activeBookId) return;
+      library.removeBookmark(library.activeBookId, wordIndex);
+    },
+    [library]
+  );
 
   // Get current bookmarks
   const currentBookmarks = library.activeBookId
@@ -305,22 +329,30 @@ function AppContent() {
       {!isReading && (
         <>
           {error && (
-            <div className="error-toast" style={{
-              position: 'fixed',
-              top: 'var(--space-lg)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(196, 30, 58, 0.95)',
-              color: 'white',
-              padding: 'var(--space-md) var(--space-lg)',
-              borderRadius: 'var(--radius-md)',
-              zIndex: 1000,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            }}>
+            <div
+              className="error-toast"
+              style={{
+                position: 'fixed',
+                top: 'var(--space-lg)',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'rgba(196, 30, 58, 0.95)',
+                color: 'white',
+                padding: 'var(--space-md) var(--space-lg)',
+                borderRadius: 'var(--radius-md)',
+                zIndex: 1000,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              }}
+            >
               {error}
               <button
                 onClick={() => setError(null)}
-                style={{ marginLeft: 'var(--space-md)', background: 'none', color: 'white', fontSize: '1.2em' }}
+                style={{
+                  marginLeft: 'var(--space-md)',
+                  background: 'none',
+                  color: 'white',
+                  fontSize: '1.2em',
+                }}
               >
                 ×
               </button>
@@ -334,10 +366,14 @@ function AppContent() {
             onRemoveBook={library.removeBook}
             onProgressTypeChange={library.setProgressDisplayType}
             onAddBook={handleAddBook}
-            addBookFormats={isTauri ? 'PDF • EPUB • Kindle • TXT' : 'TXT • EPUB • Kindle'}
-            emptyHint={isTauri
-              ? '👆 Click "Add Book" to start reading'
-              : '👆 Browser mode supports TXT, EPUB, and Kindle books (.mobi, .azw, .azw3). Use the desktop app for PDF.'}
+            addBookFormats={
+              isTauri ? 'PDF • EPUB • Kindle • TXT' : 'TXT • EPUB • Kindle'
+            }
+            emptyHint={
+              isTauri
+                ? '👆 Click "Add Book" to start reading'
+                : '👆 Browser mode supports TXT, EPUB, and Kindle books (.mobi, .azw, .azw3). Use the desktop app for PDF.'
+            }
             isAddingBook={isLoading}
           />
           <input

@@ -1,31 +1,75 @@
-{ lib, pkgs, system }:
+{
+  lib,
+  pkgs,
+  system,
+}:
 let
+  buildTools = with pkgs; [
+    cargo
+    clang
+    coreutils
+    python312Packages.black
+    glib
+    nodejs_22
+    nixfmt
+    onefetch
+    pkg-config
+    prettier
+    python312
+    rust-analyzer
+    rustc
+    rustfmt
+    stdenv.cc
+    treefmt
+  ];
   runtimeLibs = with pkgs; [
-    atk cairo dbus gdk-pixbuf glib gtk3 harfbuzz
-    libsoup_3 openssl pango webkitgtk_4_1 zlib stdenv.cc.cc.lib
+    atk
+    cairo
+    dbus
+    gdk-pixbuf
+    glib
+    gtk3
+    harfbuzz
+    libsoup_3
+    openssl
+    pango
+    webkitgtk_4_1
+    zlib
+    stdenv.cc.cc.lib
   ];
   schemaDirs = [
     "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}/glib-2.0/schemas"
     "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas"
   ];
-  sidecarName = {
-    x86_64-linux = "python-backend-x86_64-unknown-linux-gnu";
-    aarch64-linux = "python-backend-aarch64-unknown-linux-gnu";
-  }.${system};
+  sidecarName =
+    {
+      x86_64-linux = "python-backend-x86_64-unknown-linux-gnu";
+      aarch64-linux = "python-backend-aarch64-unknown-linux-gnu";
+    }
+    .${system};
   libPath = lib.makeLibraryPath runtimeLibs;
-in {
-  inherit runtimeLibs schemaDirs sidecarName libPath;
-  devInputs = with pkgs; [
-    bash clang cargo coreutils glib nodejs_22 onefetch
-    pkg-config python311 rustc stdenv.cc
-  ];
   pkgConfigPath = lib.makeSearchPathOutput "dev" "lib/pkgconfig" runtimeLibs;
-  xdgDataDirs = lib.makeSearchPath "share" [ pkgs.gtk3 pkgs.gsettings-desktop-schemas ];
+  xdgDataDirs = lib.makeSearchPath "share" [
+    pkgs.gtk3
+    pkgs.gsettings-desktop-schemas
+  ];
+in
+{
+  inherit
+    buildTools
+    libPath
+    pkgConfigPath
+    runtimeLibs
+    schemaDirs
+    sidecarName
+    xdgDataDirs
+    ;
+  shellInputs = buildTools ++ runtimeLibs;
   commonEnv = ''
     export LIBRARY_PATH="${libPath}:''${LIBRARY_PATH:-}"
     export LD_LIBRARY_PATH="$LIBRARY_PATH"
-    export PKG_CONFIG_PATH="${lib.makeSearchPathOutput "dev" "lib/pkgconfig" runtimeLibs}:''${PKG_CONFIG_PATH:-}"
-    export XDG_DATA_DIRS="${lib.makeSearchPath "share" [ pkgs.gtk3 pkgs.gsettings-desktop-schemas ]}:''${XDG_DATA_DIRS:-}"
+    export PKG_CONFIG_PATH="${pkgConfigPath}:''${PKG_CONFIG_PATH:-}"
+    export XDG_DATA_DIRS="${xdgDataDirs}:''${XDG_DATA_DIRS:-}"
   '';
   devEnv = ''
     export GDK_BACKEND=x11
@@ -41,6 +85,24 @@ in {
   '';
   installNode = ''
     if [ ! -d "$repo_root/node_modules" ]; then npm install --prefix "$repo_root"; fi
+  '';
+  ensureVenv = ''
+    if [ ! -x "$repo_root/backend/.nix-venv/bin/python" ]; then
+      python3 -m venv "$repo_root/backend/.nix-venv"
+    fi
+    if [ ! -f "$repo_root/backend/.nix-venv/.requirements-installed" ] || [ "$repo_root/backend/requirements.txt" -nt "$repo_root/backend/.nix-venv/.requirements-installed" ]; then
+      "$repo_root/backend/.nix-venv/bin/pip" install -r "$repo_root/backend/requirements.txt"
+      touch "$repo_root/backend/.nix-venv/.requirements-installed"
+    fi
+  '';
+  ensureSidecar = ''
+        mkdir -p "$repo_root/src-tauri/binaries"
+        cat > "$repo_root/src-tauri/binaries/${sidecarName}" <<EOF
+    #!/usr/bin/env bash
+    set -euo pipefail
+    exec "$repo_root/backend/.nix-venv/bin/python" "$repo_root/backend/main.py" "\$@"
+    EOF
+        chmod +x "$repo_root/src-tauri/binaries/${sidecarName}"
   '';
   compileSchemas = root: ''
     schema_dir="${root}/.nix-gsettings-schemas"

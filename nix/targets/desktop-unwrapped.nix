@@ -1,4 +1,9 @@
-{ frontend, pkgs, shared, src }:
+{
+  frontend,
+  pkgs,
+  shared,
+  src,
+}:
 pkgs.rustPlatform.buildRustPackage {
   pname = "rsvp-reader-unwrapped";
   version = "0.1.0";

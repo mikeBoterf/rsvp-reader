@@ -8,6 +8,9 @@ pkgs.python312Packages.buildPythonPackage rec {
     hash = "sha256-m4FPQs03UNIjd+gJXYSXSUO5TdgIGpChxAPGTDYCvSY=";
   };
   build-system = [ pkgs.python312Packages.hatchling ];
-  dependencies = [ pkgs.python312Packages.loguru standardImghdr ];
+  dependencies = [
+    pkgs.python312Packages.loguru
+    standardImghdr
+  ];
   doCheck = false;
 }

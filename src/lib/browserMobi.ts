@@ -4,7 +4,9 @@ import { countWords, htmlToText } from './ebookDom';
 import { buildBrowserParseResult } from './rsvpTokenizer';
 
 export async function parseBrowserMobi(file: File) {
-  const parser = file.name.toLowerCase().endsWith('.azw3') ? initKf8File : initMobiFile;
+  const parser = file.name.toLowerCase().endsWith('.azw3')
+    ? initKf8File
+    : initMobiFile;
   const book = await parser(file);
   const metadata = book.getMetadata?.() ?? {};
   const spine = book.getSpine();

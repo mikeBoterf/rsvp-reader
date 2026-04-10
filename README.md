@@ -32,12 +32,12 @@
 
 ## 📖 Supported Formats
 
-| Format | Extensions | Parser |
-|--------|-----------|--------|
-| PDF | `.pdf` | PyMuPDF |
-| EPUB | `.epub` | ebooklib |
-| Kindle | `.mobi`, `.azw`, `.azw3` | mobi |
-| Plain Text | `.txt` | Built-in |
+| Format     | Extensions               | Parser   |
+| ---------- | ------------------------ | -------- |
+| PDF        | `.pdf`                   | PyMuPDF  |
+| EPUB       | `.epub`                  | ebooklib |
+| Kindle     | `.mobi`, `.azw`, `.azw3` | mobi     |
+| Plain Text | `.txt`                   | Built-in |
 
 ## 🧭 Product Model
 
@@ -50,6 +50,8 @@
 The flake is desktop-first:
 
 ```bash
+direnv allow           # optional: auto-load the flake shell
+
 nix build              # build the native desktop app
 ./result/bin/rsvp-reader
 
@@ -57,9 +59,12 @@ nix run                # run the packaged native desktop app
 nix run .#dev-desktop  # Tauri + Vite development workflow
 nix run .#dev-web      # browser-only Vite development workflow
 nix develop            # toolchain shell
+nix fmt                # format Nix files
+npm run format         # format app, markdown, and Rust code
 ```
 
 Notes:
+
 - `nix build` and `nix run` target the packaged desktop app, not the dev server.
 - Desktop mode supports PDF, EPUB, Kindle (`.mobi`, `.azw`, `.azw3`), and TXT.
 - Web mode supports local `.txt`, `.epub`, and Kindle (`.mobi`, `.azw`, `.azw3`) imports in-browser.
@@ -103,17 +108,17 @@ The built installer will be at `src-tauri/target/release/bundle/nsis/`.
 
 ## ⌨️ Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `Space` | Play / Pause |
-| `→` | Next word |
-| `←` | Previous word |
-| `↑` | Increase WPM (+25) |
-| `↓` | Decrease WPM (-25) |
-| `]` | Next chapter |
-| `[` | Previous chapter |
-| `R` | Reset to beginning |
-| `Escape` | Return to library |
+| Key      | Action             |
+| -------- | ------------------ |
+| `Space`  | Play / Pause       |
+| `→`      | Next word          |
+| `←`      | Previous word      |
+| `↑`      | Increase WPM (+25) |
+| `↓`      | Decrease WPM (-25) |
+| `]`      | Next chapter       |
+| `[`      | Previous chapter   |
+| `R`      | Reset to beginning |
+| `Escape` | Return to library  |
 
 ## 🏗️ Architecture
 

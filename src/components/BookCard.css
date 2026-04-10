@@ -1,153 +1,157 @@
 /* Book Card - Grid Layout */
 .book-card {
-    display: flex;
-    flex-direction: column;
-    padding: var(--space-lg);
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: all 200ms ease;
-    position: relative;
-    min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 200ms ease;
+  position: relative;
+  min-height: 200px;
 }
 
 .book-card:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .book-card.active {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 2px var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
 }
 
 /* ========== Book Cover ========== */
 .book-cover {
-    width: 100%;
-    height: 100px;
-    margin-bottom: var(--space-md);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background: var(--color-bg-tertiary);
+  width: 100%;
+  height: 100px;
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-tertiary);
 }
 
 .book-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .book-cover-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-hover) 100%
+  );
 }
 
 .book-format {
-    font-size: var(--text-lg);
-    font-weight: 700;
-    color: var(--color-bg-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-bg-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* ========== Book Info ========== */
 .book-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .book-card .book-title {
-    font-family: var(--font-serif);
-    font-size: var(--text-base);
-    font-weight: 600;
-    color: var(--color-text-primary);
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
 }
 
 .book-card .book-author {
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }
 
 /* ========== Progress ========== */
 .book-progress {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    margin-top: auto;
-    padding-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: auto;
+  padding-top: var(--space-md);
 }
 
 .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: var(--color-border);
-    border-radius: 3px;
-    overflow: hidden;
+  width: 100%;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .progress-fill {
-    height: 100%;
-    background: var(--color-accent);
-    border-radius: 3px;
-    transition: width 300ms ease;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 3px;
+  transition: width 300ms ease;
 }
 
 .progress-text {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    text-align: left;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
 }
 
 .progress-text:hover {
-    color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 /* ========== Remove Button ========== */
 .book-remove {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--text-lg);
-    color: var(--color-text-muted);
-    background: var(--color-bg-primary);
-    border-radius: 50%;
-    opacity: 0;
-    transition: all 150ms ease;
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  background: var(--color-bg-primary);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 150ms ease;
 }
 
 .book-card:hover .book-remove {
-    opacity: 1;
+  opacity: 1;
 }
 
 .book-remove:hover {
-    color: var(--color-orp);
-    background: rgba(196, 30, 58, 0.1);
+  color: var(--color-orp);
+  background: rgba(196, 30, 58, 0.1);
 }

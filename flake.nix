@@ -6,7 +6,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -16,6 +17,7 @@
       imports = [
         ./nix/parts/apps.nix
         ./nix/parts/devshell.nix
+        ./nix/parts/formatter.nix
         ./nix/parts/packages.nix
       ];
     };

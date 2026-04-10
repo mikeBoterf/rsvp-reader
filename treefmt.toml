@@ -1,0 +1,28 @@
+[global]
+excludes = [
+  ".direnv/**",
+  "backend/.nix-venv/**",
+  "backend/venv/**",
+  "dist/**",
+  "node_modules/**",
+  "result/**",
+  "src-tauri/target/**",
+]
+
+[formatter.black]
+command = "black"
+includes = ["*.py"]
+
+[formatter.nixfmt]
+command = "nixfmt"
+includes = ["*.nix"]
+
+[formatter.prettier]
+command = "prettier"
+options = ["--write"]
+includes = ["*.css", "*.html", "*.json", "*.md", "*.ts", "*.tsx"]
+
+[formatter.rustfmt]
+command = "rustfmt"
+options = ["--edition", "2021"]
+includes = ["*.rs"]

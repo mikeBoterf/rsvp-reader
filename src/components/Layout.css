@@ -1,123 +1,125 @@
 .layout {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
 }
 
 /* ========== Sidebar Base ========== */
 .sidebar {
-    display: flex;
-    flex-direction: column;
-    width: var(--sidebar-width);
-    background: var(--color-bg-secondary);
-    border-color: var(--color-border);
-    transition: width var(--transition-base), opacity var(--transition-base);
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border);
+  transition:
+    width var(--transition-base),
+    opacity var(--transition-base);
+  overflow: hidden;
 }
 
 .sidebar.collapsed {
-    width: var(--sidebar-collapsed);
+  width: var(--sidebar-collapsed);
 }
 
 .sidebar-left {
-    border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
 }
 
 .sidebar-right {
-    border-left: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
 }
 
 /* ========== Sidebar Header ========== */
 .sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md) var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-    min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 60px;
 }
 
 .app-logo {
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--color-text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: 0.02em;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
 }
 
 .sidebar.collapsed .app-logo {
-    opacity: 0;
-    width: 0;
+  opacity: 0;
+  width: 0;
 }
 
 .sidebar-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
 }
 
 .sidebar-toggle:hover {
-    background: var(--color-accent);
-    color: var(--color-bg-primary);
-    border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-bg-primary);
+  border-color: var(--color-accent);
 }
 
 /* ========== Sidebar Content ========== */
 .sidebar-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: var(--space-md);
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
 }
 
 .sidebar.collapsed .sidebar-content {
-    opacity: 0;
-    pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ========== Main Content ========== */
 .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: var(--space-xl);
-    background: var(--color-bg-primary);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-xl);
+  background: var(--color-bg-primary);
 }
 
 /* ========== Responsive ========== */
 @media (max-width: 900px) {
-    .sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        z-index: 100;
-    }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+  }
 
-    .sidebar-left {
-        left: 0;
-    }
+  .sidebar-left {
+    left: 0;
+  }
 
-    .sidebar-right {
-        right: 0;
-    }
+  .sidebar-right {
+    right: 0;
+  }
 
-    .sidebar.collapsed {
-        width: 0;
-        border: none;
-    }
+  .sidebar.collapsed {
+    width: 0;
+    border: none;
+  }
 
-    .main-content {
-        padding: var(--space-md);
-    }
+  .main-content {
+    padding: var(--space-md);
+  }
 }

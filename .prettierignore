@@ -1,0 +1,6 @@
+backend/.nix-venv
+backend/venv
+dist
+node_modules
+result
+src-tauri/target
