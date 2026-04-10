@@ -9,25 +9,55 @@
     }:
     let
       shared = import ../lib/shared.nix { inherit lib pkgs system; };
+      mkNakedShell =
+        {
+          name ? "dev-shell",
+          packages ? [ ],
+          env ? { },
+          shellHook ? "",
+        }:
+        let
+          bash = pkgs.bashInteractive;
+          path = lib.makeBinPath packages;
+          envHook = lib.concatStringsSep "\n" (
+            lib.mapAttrsToList (k: v: "export ${k}=${lib.escapeShellArg v}") env
+          );
+          hook = ''
+            export PATH="${path}:$PATH"
+            ${envHook}
+            ${shellHook}
+          '';
+        in
+        pkgs.runCommandLocal name
+          {
+            shellHook = hook;
+            passthru = {
+              inherit shellHook;
+              stdenv = pkgs.writeTextFile {
+                name = "fake-stdenv";
+                destination = "/setup";
+                text = "";
+                passthru.shell = "${bash}/bin/bash";
+              };
+            };
+          }
+          ''
+            mkdir -p $out
+          '';
     in
     {
-      devShells.default = pkgs.mkShell {
+      devShells.default = mkNakedShell {
+        name = "rsvp-reader-dev";
         packages = shared.shellInputs;
+        env = {
+          LIBRARY_PATH = shared.libPath;
+          LD_LIBRARY_PATH = shared.libPath;
+          PKG_CONFIG_PATH = shared.pkgConfigPath;
+          XDG_DATA_DIRS = "${shared.xdgDataDirs}:${builtins.getEnv "XDG_DATA_DIRS"}";
+        };
         shellHook = ''
-                    ${shared.ensureRepo}
-                    ${shared.commonEnv}
-                    ${shared.compileSchemas "$repo_root"}
-                    if [ -t 1 ]; then onefetch || true; fi
-                    cat <<'EOF'
-          Commands:
-            nix build             # build the native app
-            nix run               # run the native app
-            nix run .#dev-desktop # Tauri desktop dev
-            nix run .#dev-web     # Vite web dev
-            nix fmt               # format the repo with treefmt
-            npm run format        # alias for treefmt
-            npm test              # project tests, if added
-          EOF
+          pre-commit install --install-hooks > /dev/null 2>&1
+          nix run .#info
         '';
       };
     };

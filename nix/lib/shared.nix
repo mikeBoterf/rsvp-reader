@@ -15,6 +15,7 @@ let
     onefetch
     pkg-config
     prettier
+    pre-commit
     python312
     rust-analyzer
     rustc

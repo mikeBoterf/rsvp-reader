@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: treefmt
+        name: treefmt
+        entry: nix develop -c npm run format:check
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: frontend-build
+        name: frontend build
+        entry: nix develop -c npm run build
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+      - id: nix-build
+        name: nix build
+        entry: nix build
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

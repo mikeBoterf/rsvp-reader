@@ -61,6 +61,7 @@ nix run .#dev-web      # browser-only Vite development workflow
 nix develop            # toolchain shell
 nix fmt                # format Nix files
 npm run format         # format app, markdown, and Rust code
+pre-commit install --install-hooks
 ```
 
 Notes:
@@ -69,6 +70,7 @@ Notes:
 - Desktop mode supports PDF, EPUB, Kindle (`.mobi`, `.azw`, `.azw3`), and TXT.
 - Web mode supports local `.txt`, `.epub`, and Kindle (`.mobi`, `.azw`, `.azw3`) imports in-browser.
 - The flake can be imported from another repository via `packages.${system}.default`.
+- Pre-commit runs formatting checks on commit and build checks on push.
 
 ## 🛠️ Building without Nix
 

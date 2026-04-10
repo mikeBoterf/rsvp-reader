@@ -44,5 +44,18 @@
         ${shared.installNode}
         exec npm --prefix "$repo_root" run dev:vite -- --host 0.0.0.0 "$@"
       '';
+      apps.info = mkApp "rsvp-reader-info" ''
+        if [ -t 1 ]; then onefetch || true; fi
+        cat <<'EOF'
+        Commands:
+          nix build             # build the native app
+          nix run               # run the native app
+          nix run .#dev-desktop # Tauri desktop dev
+          nix run .#dev-web     # Vite web dev
+          nix fmt               # format the repo with treefmt
+          npm run format        # alias for treefmt
+          npm test              # project tests, if added
+        EOF
+      '';
     };
 }
